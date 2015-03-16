@@ -20,7 +20,8 @@ Documentation
  - Colors - have a red, green and blue (unsigned char)
 
 **Functions**
-*The following functions are mainly used internally, but are still accessible to users:*
+
+**The following functions are mainly used internally, but are still accessible to users:**
  - `double sqrt(double n)` - Square root
  - `double floor(double n)` - Floor function
 
@@ -33,6 +34,8 @@ Documentation
  - `draw_frect(point p, unsigned int l, unsigned int w, color c)` - Draws a filled rectangle starting at point p and going l out on the x axis and w out on the y axis with color c
  - `draw_circle(point center, int radius, color c)` - Draws a circle (not filled in!) at point center with specified radius and color c
  - `void draw_fcircle(point center, int radius, color c)` - Draws a filled circle at point center with specified radius and color c
+ 
+
 **Variables** 
  - `VideoX` - Size of the screen on the X axis
  - `VideoY` - Size of the screen on the Y axis
