@@ -37,7 +37,7 @@ Documentation
  
 
 **Variables** 
- - `VideoX` - Size of the screen on the X axis
- - `VideoY` - Size of the screen on the Y axis
- - `VideoBBP` - BBP of the screen (color resolution)
- - `VideoMemory` - Video memory, **mainly used internally, it is not recommended you play with this unless you know what you're doing!**
+ - `unsigned long VideoX` - Size of the screen on the X axis
+ - `unsigned long VideoY` - Size of the screen on the Y axis
+ - `unsigned long VideoBBP` - BBP of the screen (color resolution)
+ - `char* VideoMemory` - Video memory, **mainly used internally, it is not recommended you play with this unless you know what you're doing!**
