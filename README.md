@@ -1,8 +1,7 @@
 # libDraw
-Drawing library in C for BareMetal-OS
 About
 --------------
-It's a drawing library for BareMetal-OS.
+libDraw is a drawing library for BareMetal-OS.
 To use, first compile by running 
 ```
 gcc -c -m64 -nostdlib -nostartfiles -nodefaultlibs -fomit-frame-pointer -mno-red-zone -o libDraw.o libDraw.c
@@ -11,6 +10,19 @@ Then, when linking files, add libDraw.o. eg:
 ```
 ld -T app.ld -o $1.app crt0.o $1.o libc.a libBareMetal.o libDraw.o
 ```
+
+It is important that you have video mode enabled in Pure64.
+Go into the Pure64/src directory and edit the file `sysvar.asm`
+Line 11 should read
+```
+cfg_vesa:               db 0    ; By default VESA is disabled. Set to 1 to enable.
+```
+Change the value to 1:
+```
+cfg_vesa:               db 1    ; By default VESA is disabled. Set to 1 to enable.
+```
+and rebuild Pure64 (run ./build.sh if you're using BareMetal scripts)
+
 -------------------------------------------------------------------------------------
 
 Documentation
@@ -28,6 +40,7 @@ Documentation
 **Main functions:**
  - `point toPoint(unsigned int x, unsigned int y)` - converts from x and y value to point
  - `color toColor(unsigned char red, unsigned char green, unsigned char blue)` - converts from RGB values to color
+ - `int init_libDraw()` - Initialize libDraw. Returns 1 if video mode is not enabled, and 0 if everything works out fine. **You must run this prior to using any of the other functions, or they will not work!**
  - `clear_screen()` Clears the screen
  - `put_pixel(unsigned int x, unsigned int y, color c)` - Draws a pixel at the location x,y with the color c
  - `draw_line(point p1, point p2, unsigned int thickness, color c)` - Draws a line with the specified thickness from p1 to p2 with color c
