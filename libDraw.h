@@ -21,6 +21,7 @@ real sqrt(real n);
 real floor(real x);
 color toColor(unsigned char red, unsigned char green, unsigned char blue);
 point toPoint(unsigned int x, unsigned int y);
+int init_libDraw();
 void clear_screen();
 //Keeping original put_pixel for coords because I'm lazy.
 void put_pixel(unsigned int x, unsigned int y, color c);
