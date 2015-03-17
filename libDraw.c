@@ -10,6 +10,24 @@
 #include <time.h>
 #include "libDraw.h"
 
+///Colours
+color red = {255, 0, 0};
+color orange = {255, 140, 0};
+color yellow = {255, 255, 0};
+color limegreen = {50, 205, 0};
+color brightgreen = {0, 255, 0};
+color blue = {0, 0, 255};
+color dodgerblue = {30, 144, 255};
+color indigo = {199, 21, 133};
+color violet = {75, 0, 130};
+color aqua = {0, 200, 200};
+color black = {0, 0, 0};
+color white = {255, 255, 255};
+color brown = {139, 69, 19};
+color cyan = {0, 139, 139};
+color gold = {255, 215, 0};
+color crimson = {220, 20, 60};
+
 //Including custom math functions because, well, math.h doesn't like to work >.>
 typedef double real; // change to float for single precision
 //Square root function from http://www.alejandrosegovia.net/2012/01/23/implementing-sqrt/
