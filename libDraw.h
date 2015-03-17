@@ -33,4 +33,21 @@ void draw_fcircle(point center, int radius, color c);
 //Variables
 unsigned long VideoX, VideoY, VideoBPP;
 char* VideoMemory;
+//Pre-defined colours
+extern color red;
+extern color orange;
+extern color yellow;
+extern color limegreen;
+extern color brightgreen;
+extern color blue;
+extern color dodgerblue;
+extern color indigo;
+extern color violet;
+extern color aqua;
+extern color black;
+extern color white;
+extern color brown;
+extern color cyan;
+extern color gold;
+extern color crimson;
 #endif
