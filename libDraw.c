@@ -181,9 +181,9 @@ void draw_frect(point p, unsigned int l, unsigned int w, color c)
 //Adapted for BareMetal-OS by ohnx
 void draw_fcircle(point center, int radius, color c)
 {
-point e;
-for(e.y=-radius; e.y<=radius; e.y++)
-    for(e.x=-radius; e.x<=radius; e.x++)
-        if(e.x*e.x+e.y*e.y <= radius*radius)
-            put_pixel(center.x+e.x, center.y+e.y, c);
+unsigned int x, y;
+for(y=-radius; y<=radius; y++)
+    for(x=-radius; x<=radius; x++)
+        if(x*x+y*y <= radius*radius)
+            put_pixel(center.x+x, center.y+y, c);
 }
