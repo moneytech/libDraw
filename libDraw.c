@@ -10,7 +10,7 @@
 #include <time.h>
 #include "libDraw.h"
 
-///Colours
+//Colors
 color red = {255, 0, 0};
 color orange = {255, 140, 0};
 color yellow = {255, 255, 0};
@@ -95,18 +95,27 @@ void put_pixel(unsigned int x, unsigned int y, color c)
 		{
 			offset = offset * 4;
 			VideoMemory[offset] = 0x00;
-			VideoMemory[offset+1] = c.blue;
+			VideoMemory[offset+1] = c.red;
+			VideoMemory[offset+2] = c.blue;
 			VideoMemory[offset+3] = c.green;
-			VideoMemory[offset+4] = c.red;
 		}
 	}
+}
+//Draw point
+void draw_point(point p, unsigned int thickness, color c)
+{
+	int i,j,thick;
+	thick=thickness/2;
+	for(i=-thick;i<thick;i++)
+		for(j=-thick;j<thick;j++)
+			put_pixel(p.x+i, p.y+j, c);
 }
 
 //Custom draw line based on DDA line algorithm
 void draw_line(point p1, point p2, unsigned int thickness, color c)
 {
     float pixel, dx, dy, curx, cury;
-    int i,gd,gm,thick,thickstart,thickend;
+    int i,gd,gm,thickx,thicky,thickstart,thickend;
     dx=abs(p2.x-p1.x);
     dy=abs(p2.y-p1.y);
     if(dx>=dy) pixel=dx;
@@ -121,8 +130,11 @@ void draw_line(point p1, point p2, unsigned int thickness, color c)
     thickend=0-thickstart;
     while(i<=pixel)
     {
-	  for(thick=thickstart;thick<=thickend;thick++){		//Crude method of thickness for lines
-          	put_pixel(curx+thick,cury,c);
+	  for(thickx=thickstart;thickx<=thickend;thickx++){		//Crude method of thickness for lines
+          	put_pixel(curx+thickx,cury,c);
+	  }
+	  for(thicky=thickstart;thicky<=thickend;thicky++){
+		put_pixel(curx,cury+thicky,c);
 	  }
           curx=curx+dx;
           cury=cury+dy;
