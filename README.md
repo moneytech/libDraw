@@ -1,7 +1,7 @@
 # libDraw
 About
 --------------
-libDraw is a drawing library for BareMetal-OS.
+libDraw is a library that lets you draw some simple 2D shapes in BareMetal-OS.
 To use, first compile by running 
 ```
 gcc -c -m64 -nostdlib -nostartfiles -nodefaultlibs -fomit-frame-pointer -mno-red-zone -o libDraw.o libDraw.c
