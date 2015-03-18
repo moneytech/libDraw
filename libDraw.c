@@ -28,7 +28,8 @@ color brown = {139, 69, 19};
 color cyan = {0, 139, 139};
 color gold = {255, 215, 0};
 color crimson = {220, 20, 60};
-
+color pink = {255, 205, 180};
+color purple = {153, 50, 204};
 //Including custom math functions because, well, math.h doesn't like to work >.>
 typedef double real; // change to float for single precision
 //Square root function from http://www.alejandrosegovia.net/2012/01/23/implementing-sqrt/
@@ -217,7 +218,7 @@ void draw_polygon(color c, unsigned int thickness, int points, ...)
 		for ( i=0; i< points; i++ )
 		{
 			tempPoint2=va_arg(arguments, point);
-			draw_line(tempPoint1, tempPoint2, thickness, c);
+			draw_line(tempPoint2, tempPoint1, thickness, c);
 			tempPoint1=tempPoint2;
 		}
 		va_end (arguments);

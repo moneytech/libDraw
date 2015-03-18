@@ -52,5 +52,7 @@ extern color brown;
 extern color cyan;
 extern color gold;
 extern color crimson;
+extern color pink;
+extern color purple;
 
 #endif
