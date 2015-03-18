@@ -33,4 +33,7 @@ int main()
         draw_line(toPoint(100, 100), toPoint(150, 100), 2, toColor(255, 255, 255));
         draw_line(toPoint(100, 150), toPoint(140, 150), 2, toColor(255, 255, 255));
         draw_line(toPoint(100, 200), toPoint(150, 200), 2, toColor(255, 255, 255));
+	draw_point(toPoint(VideoX/2, VideoY/2), 2, blue);
+	draw_polygon(blue, 2, 5, toPoint(300, 300), toPoint(400, 300), toPoint(450, 400), toPoint(375, 450), toPoint(250, 400));
+	flush_buffer();
 }

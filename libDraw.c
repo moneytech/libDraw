@@ -9,6 +9,7 @@
 #include "libBareMetal.h"
 #include <time.h>
 #include "libDraw.h"
+#include <stdarg.h>
 
 //Colors
 color red = {255, 0, 0};
@@ -64,6 +65,10 @@ int init_libDraw(){
         VideoX = b_system_config(21, 0);
         VideoY = b_system_config(22, 0);
         VideoBPP = b_system_config(23, 0);
+	//VideoBuffer = (char *) malloc(VideoX * VideoY * (VideoBPP / 4));
+}
+void flush_buffer(){
+	memset(VideoMemory, 0x00, VideoBuffer);
 }
 //Found from 3dstars.c
 void clear_screen()
@@ -198,4 +203,23 @@ for(y=-radius; y<=radius; y++)
     for(x=-radius; x<=radius; x++)
         if(x*x+y*y <= radius*radius)
             put_pixel(center.x+x, center.y+y, c);
+}
+void draw_polygon(color c, unsigned int thickness, int points, ...)
+{
+	int i;
+	point tempPoint1={0,0};
+	point tempPoint2={0,0};
+	va_list arguments;
+	if(points>=3)
+	{
+		va_start(arguments, points);
+		tempPoint1 = va_arg(arguments, point);
+		for ( i=0; i< points; i++ )
+		{
+			tempPoint2=va_arg(arguments, point);
+			draw_line(tempPoint1, tempPoint2, thickness, c);
+			tempPoint1=tempPoint2;
+		}
+		va_end (arguments);
+	}
 }

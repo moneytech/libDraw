@@ -30,9 +30,11 @@ void draw_frect(point p, unsigned int l, unsigned int w, color c);
 //American spelling for centre, too
 void draw_circle(point center, int radius, color c);
 void draw_fcircle(point center, int radius, color c);
+void draw_polygon(color c, unsigned int thickness, int points, ...);
 //Variables
 unsigned long VideoX, VideoY, VideoBPP;
 char* VideoMemory;
+char* VideoBuffer;
 
 extern color red;
 extern color orange;
