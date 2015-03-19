@@ -23,6 +23,8 @@ color toColor(unsigned char red, unsigned char green, unsigned char blue);
 point toPoint(unsigned int x, unsigned int y);
 int init_libDraw();
 void clear_screen();
+void clear_buffer();
+void flush_buffer();
 //Keeping original put_pixel for coords because I'm lazy.
 void put_pixel(unsigned int x, unsigned int y, color c);
 void draw_line(point p1, point p2, unsigned int thickness, color c);
@@ -32,7 +34,7 @@ void draw_circle(point center, int radius, color c);
 void draw_fcircle(point center, int radius, color c);
 void draw_polygon(color c, unsigned int thickness, int points, ...);
 //Variables
-unsigned long VideoX, VideoY, VideoBPP;
+unsigned long VideoX, VideoY, VideoBPP, VideoMemSize;
 char* VideoMemory;
 char* VideoBuffer;
 

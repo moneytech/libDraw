@@ -30,6 +30,7 @@ color gold = {255, 215, 0};
 color crimson = {220, 20, 60};
 color pink = {255, 205, 180};
 color purple = {153, 50, 204};
+
 //Including custom math functions because, well, math.h doesn't like to work >.>
 typedef double real; // change to float for single precision
 //Square root function from http://www.alejandrosegovia.net/2012/01/23/implementing-sqrt/
@@ -66,10 +67,9 @@ int init_libDraw(){
         VideoX = b_system_config(21, 0);
         VideoY = b_system_config(22, 0);
         VideoBPP = b_system_config(23, 0);
-	//VideoBuffer = (char *) malloc(VideoX * VideoY * (VideoBPP / 4));
-}
-void flush_buffer(){
-	memset(VideoMemory, 0x00, VideoBuffer);
+	VideoMemSize = VideoX * VideoY * (VideoBPP / 4);
+	VideoBuffer = (char *) malloc(VideoMemSize);
+	clear_buffer();
 }
 //Found from 3dstars.c
 void clear_screen()
@@ -80,8 +80,17 @@ void clear_screen()
 		bytes = bytes * 3;
 	else if (VideoBPP == 32)
 		bytes = bytes * 4;
-
 	memset(VideoMemory, 0x00, bytes);
+}
+void clear_buffer()
+{
+	memset(VideoBuffer, 0x00, VideoMemSize);
+}
+void flush_buffer()
+{
+	memcpy(VideoMemory, VideoBuffer, VideoMemSize);
+	//Alternatively, you could clear the buffer, but I'm going to leave that to clear_screen to do.
+	//memset(VideoBuffer, 0x00, VideoMemSize);
 }
 //Just going to leave the x y coordinates here
 void put_pixel(unsigned int x, unsigned int y, color c)
@@ -93,17 +102,17 @@ void put_pixel(unsigned int x, unsigned int y, color c)
 		if (VideoBPP == 24)
 		{
 			offset = offset * 3;
-			VideoMemory[offset] = c.blue;
-			VideoMemory[offset+1] = c.green;
-			VideoMemory[offset+2] = c.red;
+			VideoBuffer[offset] = c.blue;
+			VideoBuffer[offset+1] = c.green;
+			VideoBuffer[offset+2] = c.red;
 		}
 		else if (VideoBPP == 32)
 		{
 			offset = offset * 4;
-			VideoMemory[offset] = 0x00;
-			VideoMemory[offset+1] = c.red;
-			VideoMemory[offset+2] = c.blue;
-			VideoMemory[offset+3] = c.green;
+			VideoBuffer[offset] = 0x00;
+			VideoBuffer[offset+1] = c.red;
+			VideoBuffer[offset+2] = c.blue;
+			VideoBuffer[offset+3] = c.green;
 		}
 	}
 }
@@ -205,22 +214,27 @@ for(y=-radius; y<=radius; y++)
         if(x*x+y*y <= radius*radius)
             put_pixel(center.x+x, center.y+y, c);
 }
+
 void draw_polygon(color c, unsigned int thickness, int points, ...)
 {
-	int i;
-	point tempPoint1={0,0};
-	point tempPoint2={0,0};
-	va_list arguments;
-	if(points>=3)
-	{
-		va_start(arguments, points);
-		tempPoint1 = va_arg(arguments, point);
-		for ( i=0; i< points; i++ )
-		{
+        int i;
+        point start={0,0};
+        point tempPoint1={0,0};
+        point tempPoint2={0,0};
+        va_list arguments;
+        if(points>=3)
+        {
+                va_start(arguments, points);
+                tempPoint1 = start = va_arg(arguments, point);
+                for ( i=0; i< points; i++ )
+                {
+                        draw_point(tempPoint1, 20, purple);
+			draw_point(tempPoint2, 20, white);
 			tempPoint2=va_arg(arguments, point);
-			draw_line(tempPoint2, tempPoint1, thickness, c);
-			tempPoint1=tempPoint2;
-		}
-		va_end (arguments);
-	}
+                        draw_line(tempPoint2, tempPoint1, thickness, c);
+                        tempPoint1=tempPoint2;
+                }
+                draw_line(start, tempPoint2, thickness, c);
+                va_end(arguments);
+        }
 }
