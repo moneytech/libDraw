@@ -21,6 +21,6 @@ void render(char *bitmap, int xreal, int yreal, int/*color*/ c) {
 int main(int argc, char **argv) {
     int ord;
     ord = atoi(argv[1]);
-    char *bitmap = font8x8_basic[ord];
+    char *bitmap = font[ord];
     render(bitmap, 0, 0, 0);
 }
