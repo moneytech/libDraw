@@ -1,4 +1,4 @@
-char font8x8_basic[128][13] = {
+char font[128][13] = {
 {0x00},
 {0x00},
 {0x00},
