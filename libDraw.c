@@ -10,6 +10,7 @@
 #include <time.h>
 #include "libDraw.h"
 #include <stdarg.h>
+#include "font.h"
 
 //Colors
 color red = {255, 0, 0};
@@ -237,4 +238,23 @@ void draw_polygon(color c, unsigned int thickness, int points, ...)
                 draw_line(start, tempPoint2, thickness, c);
                 va_end(arguments);
         }
+}
+
+void put_text(char* text, int length, point start, color c)
+{
+	int i = *(text) - '0';
+	char *bitmap = font[i];
+	int x,y,set;
+    	for (x=12; x >= 0; x--) {
+		for (y=7; y >= 0; y--) {
+            		//Replace with set pixel later on
+			set = bitmap[x] & 1 << y;
+        		if(set)
+				put_pixel(x, y, c);
+			else
+				put_pixel(xreal, yreal, c);
+			xreal++;
+			yreal++;
+		}
+    }
 }
