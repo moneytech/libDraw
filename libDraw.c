@@ -156,7 +156,7 @@ void draw_line(point p1, point p2, unsigned int thickness, color c)
           cury=cury+dy;
           i=i+1;
     }
-    //TODO: Smooth the lines
+    //TODO: Smooth the lines (antialias)
 }
 //Draw a filled rectangle
 void draw_frect(point p, unsigned int l, unsigned int w, color c)
@@ -218,26 +218,24 @@ for(y=-radius; y<=radius; y++)
 
 void draw_polygon(color c, unsigned int thickness, int points, ...)
 {
-        int i;
-        point start={0,0};
-        point tempPoint1={0,0};
-        point tempPoint2={0,0};
-        va_list arguments;
-        if(points>=3)
-        {
-                va_start(arguments, points);
-                tempPoint1 = start = va_arg(arguments, point);
-                for ( i=0; i< points; i++ )
-                {
-                        draw_point(tempPoint1, 20, purple);
-			draw_point(tempPoint2, 20, white);
-			tempPoint2=va_arg(arguments, point);
-                        draw_line(tempPoint2, tempPoint1, thickness, c);
-                        tempPoint1=tempPoint2;
-                }
-                draw_line(start, tempPoint2, thickness, c);
-                va_end(arguments);
+    int i;
+    point start={0,0};
+    point tempPoint1={0,0};
+    point tempPoint2={0,0};
+    va_list arguments;
+    if(points>=3) {
+        va_start(arguments, points);
+        start = va_arg(arguments, point);
+        tempPoint1 = start;
+        points--;
+        for ( i=0; i< points; i++ ) {
+            tempPoint2=va_arg(arguments, point);
+            draw_line(tempPoint1, tempPoint2, thickness, c);
+            tempPoint1=tempPoint2;
         }
+        draw_line(start, tempPoint2, thickness, c);
+        va_end(arguments);
+    }
 }
 
 void put_text(char* text, int length, point start, color c)
