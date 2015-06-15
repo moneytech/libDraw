@@ -13,12 +13,6 @@ typedef struct {
 	unsigned char red, green, blue;
 } color; //Going with the American spelling for colour here
 
-//Math
-typedef double real;
-//Functions
-real f(real x, real n);
-real sqrt(real n);
-real floor(real x);
 color toColor(unsigned char red, unsigned char green, unsigned char blue);
 point toPoint(unsigned int x, unsigned int y);
 int init_libDraw();
@@ -27,12 +21,16 @@ void clear_buffer();
 void flush_buffer();
 //Keeping original put_pixel for coords because I'm lazy.
 void put_pixel(unsigned int x, unsigned int y, color c);
-void draw_line(point p1, point p2, unsigned int thickness, color c);
+color get_pixel(unsigned int x, unsigned int y);
+void draw_line(point s, point e, color c);
 void draw_frect(point p, unsigned int l, unsigned int w, color c);
-//American spelling for centre, too
-void draw_circle(point center, int radius, color c);
 void draw_fcircle(point center, int radius, color c);
-void draw_polygon(color c, unsigned int thickness, int points, ...);
+//Polygon function
+void draw_polygon(color c, int points, ...);
+//Text functions
+void draw_schar(char to, point where, color c);
+void draw_char(char to, point where, int size, color c);
+void draw_text(char* text, int length, point start, int size, color c);
 //Variables
 unsigned long VideoX, VideoY, VideoBPP, VideoMemSize;
 char* VideoMemory;
@@ -56,5 +54,7 @@ extern color gold;
 extern color crimson;
 extern color pink;
 extern color purple;
+
+extern float libDraw_text_character_spacing;
 
 #endif

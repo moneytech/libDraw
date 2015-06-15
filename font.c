@@ -1,7 +1,7 @@
-#include <stdio.h>
+/*#include <stdio.h>
 #include "font.h"
 
-void render(char *bitmap, int xreal, int yreal, int/*color*/ c) {
+void txtrender(char *bitmap, int xreal, int yreal, int/*color*//* c) {
     int x,y,set;
     for (x=12; x >= 0; x--) {
         for (y=7; y >= 0; y--) {
@@ -16,11 +16,4 @@ void render(char *bitmap, int xreal, int yreal, int/*color*/ c) {
         }
         printf("\n");
     }
-}
-
-int main(int argc, char **argv) {
-    int ord;
-    ord = atoi(argv[1]);
-    char *bitmap = font[ord];
-    render(bitmap, 0, 0, 0);
-}
+}*/

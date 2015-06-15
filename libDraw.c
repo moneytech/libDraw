@@ -32,27 +32,8 @@ color crimson = {220, 20, 60};
 color pink = {255, 205, 180};
 color purple = {153, 50, 204};
 
-//Including custom math functions because, well, math.h doesn't like to work >.>
-typedef double real; // change to float for single precision
-//Square root function from http://www.alejandrosegovia.net/2012/01/23/implementing-sqrt/
-//No copyright was found on the page, so I'm guessing it's fine to use.
-real f(real x, real n) {return x*x - n;}
-real sqrt(real n){
-    real err = 0.00000000001f;
-    real h = 0.01f;
-    real x = 1.0f; // seed
-    real xant = 0.0f;
-    do {
-        xant = x;
-        real df = (f(x+h, n) - f(x, n))/h;
-        x = x - f(x, n)/df;
-    }
-    while (abs(x - xant) > err);
-    return x;
-}
-//Floor from http://codegolf.stackexchange.com/a/293
-//I could have implemented this myself, but I wanted to get everything working ASAP
-real floor(real x){int i=x-2;while(++i<=x-1);return i;}
+//Character spacing
+float libDraw_text_character_spacing = 1.2;
 
 //Conversion tool from rgb color to color
 color toColor(unsigned char red, unsigned char green, unsigned char blue){color t={red,green,blue};return t;}
@@ -117,6 +98,27 @@ void put_pixel(unsigned int x, unsigned int y, color c)
 		}
 	}
 }
+
+color get_pixel(unsigned int x, unsigned int y)
+{
+	color c;
+	int offset = y * VideoX + x;
+	if (VideoBPP == 24)
+	{
+		offset = offset * 3;
+		c.blue = VideoMemory[offset];
+		c.green = VideoMemory[offset+1];
+		c.red = VideoMemory[offset+2];
+	}
+	else if (VideoBPP == 32)
+	{
+		offset = offset * 4;
+		c.blue = VideoMemory[offset];
+		c.green = VideoMemory[offset+1];
+		c.red = VideoMemory[offset+2];
+	}
+	return c;
+}
 //Draw point
 void draw_point(point p, unsigned int thickness, color c)
 {
@@ -126,37 +128,55 @@ void draw_point(point p, unsigned int thickness, color c)
 		for(j=-thick;j<thick;j++)
 			put_pixel(p.x+i, p.y+j, c);
 }
-
-//Custom draw line based on DDA line algorithm
-void draw_line(point p1, point p2, unsigned int thickness, color c)
-{
-    float pixel, dx, dy, curx, cury;
-    int i,gd,gm,thickx,thicky,thickstart,thickend;
-    dx=abs(p2.x-p1.x);
-    dy=abs(p2.y-p1.y);
-    if(dx>=dy) pixel=dx;
-    else pixel=dy;
-
-    dx=dx/pixel;//increment required each time
-    dy=dy/pixel;
-    curx=p1.x;
-    cury=p1.y;
-    i=1;
-    thickstart=0-thickness/2;
-    thickend=0-thickstart;
-    while(i<=pixel)
-    {
-	  for(thickx=thickstart;thickx<=thickend;thickx++){		//Crude method of thickness for lines
-          	put_pixel(curx+thickx,cury,c);
-	  }
-	  for(thicky=thickstart;thicky<=thickend;thicky++){
-		put_pixel(curx,cury+thicky,c);
-	  }
-          curx=curx+dx;
-          cury=cury+dy;
-          i=i+1;
+//Bresenham algorithm for lines - could go with Xiaolin Wu's, but this is easier ^.^
+void draw_line(point s, point e, color c) {
+    /*if(s.x=e.x) {
+      int i=0;
+      int d = abs(s.y-e.y);
+      for(; i<d; i++) {
+	put_pixel(s.x,s.y+i,c);
+      }
+      return;
     }
-    //TODO: Smooth the lines (antialias)
+    if(s.y=e.y) {
+      int i=0;
+      int d = abs(s.x-e.x);
+      for(; i<d; i++) {
+	put_pixel(s.x+i,s.y,c);
+      }
+      return;
+    }*/
+    int x = s.x;
+    int y = s.y;
+    int x2 = e.x;
+    int y2 = e.y;
+    int w = x2 - x;
+    int h = y2 - y;
+    int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0, i = 0;
+    if (w<0) dx1 = -1; else if (w>0) dx1 = 1;
+    if (h<0) dy1 = -1; else if (h>0) dy1 = 1;
+    if (w<0) dx2 = -1; else if (w>0) dx2 = 1;
+    int longest = abs(w);
+    int shortest = abs(h);
+    if (!(longest>shortest)) {
+        longest = abs(h);
+        shortest = abs(w);
+        if (h<0) dy2 = -1; else if (h>0) dy2 = 1;
+        dx2 = 0 ;
+    }
+    int numerator = longest >> 1;
+    for (i=0;i<=longest;i++) {
+	put_pixel(x,y,c);
+        numerator += shortest;
+        if (!(numerator<longest)) {
+            numerator -= longest;
+            x += dx1;
+            y += dy1;
+        } else {
+            x += dx2;
+            y += dy2;
+        }
+    }
 }
 //Draw a filled rectangle
 void draw_frect(point p, unsigned int l, unsigned int w, color c)
@@ -170,41 +190,6 @@ void draw_frect(point p, unsigned int l, unsigned int w, color c)
 		}
 	}
 }
-//Algorithm found from http://groups.csail.mit.edu/graphics/classes/6.837/F98/Lecture6/circle.html
-//Implementation in C by ohnx
-    void draw_circle(point center, int radius, color c)
-    {
-		point e;
-        int r2;
-
-        r2 = radius * radius;
-        put_pixel(center.x, center.y + radius, c);
-        put_pixel(center.x, center.y - radius, c);
-        put_pixel(center.x + radius, center.y, c);
-        put_pixel(center.x - radius, center.y, c);
-
-        e.y = radius;
-        e.x = 1;
-        e.y = sqrt(r2 - 1)+ 0.5;
-        while (e.x < e.y) {
-            put_pixel(center.x + e.x, center.y + e.y, c);
-            put_pixel(center.x + e.x, center.y - e.y, c);
-            put_pixel(center.x - e.x, center.y + e.y, c);
-            put_pixel(center.x - e.x, center.y - e.y, c);
-            put_pixel(center.x + e.y, center.y + e.x, c);
-            put_pixel(center.x + e.y, center.y - e.x, c);
-            put_pixel(center.x - e.y, center.y + e.x, c);
-            put_pixel(center.x - e.y, center.y - e.x, c);
-            e.x += 1;
-            e.y = sqrt(r2 - e.x*e.x);
-        }
-        if (e.x == e.y) {
-            put_pixel(center.x + e.x, center.y + e.y, c);
-            put_pixel(center.x + e.x, center.y - e.y, c);
-            put_pixel(center.x - e.x, center.y + e.y, c);
-            put_pixel(center.x - e.x, center.y - e.y, c);
-        }
-    }
 //Found from http://stackoverflow.com/a/1237519
 //Adapted for BareMetal-OS by ohnx
 void draw_fcircle(point center, int radius, color c)
@@ -216,43 +201,148 @@ for(y=-radius; y<=radius; y++)
             put_pixel(center.x+x, center.y+y, c);
 }
 
-void draw_polygon(color c, unsigned int thickness, int points, ...)
+void draw_polygon(color c, int points, ...)
 {
     int i;
-    point start={0,0};
-    point tempPoint1={0,0};
-    point tempPoint2={0,0};
-    va_list arguments;
+    point start;
+    point tempPoint1;
+    point tempPoint2;
+    va_list args;
     if(points>=3) {
-        va_start(arguments, points);
-        start = va_arg(arguments, point);
+        va_start(args, points);
+        start = va_arg(args, point);
         tempPoint1 = start;
         points--;
         for ( i=0; i< points; i++ ) {
-            tempPoint2=va_arg(arguments, point);
-            draw_line(tempPoint1, tempPoint2, thickness, c);
+            tempPoint2=va_arg(args, point);
+            draw_line(tempPoint1, tempPoint2, c);
             tempPoint1=tempPoint2;
         }
-        draw_line(start, tempPoint2, thickness, c);
-        va_end(arguments);
+        draw_line(start, tempPoint2, c);
+        //printf("Line between points %d, %d and %d, %d\n", tempPoint2.x, tempPoint2.y, start.x, start.y);
+        va_end(args);
     }
 }
 
-void put_text(char* text, int length, point start, color c)
+void draw_text(char* text, int length, point start, int size, color c)
 {
-	int i = *(text) - '0';
-	char *bitmap = font[i];
-	int x,y,set;
-    	for (x=12; x >= 0; x--) {
-		for (y=7; y >= 0; y--) {
-            		//Replace with set pixel later on
-			set = bitmap[x] & 1 << y;
-        		if(set)
-				put_pixel(x, y, c);
-			else
-				put_pixel(xreal, yreal, c);
-			xreal++;
-			yreal++;
+	int i=0;
+	int len=length;
+	if(size==1) {
+	  	for(;i<len;i++) {
+	  		draw_schar(*(text+i), toPoint(start.x+i*7+2, start.y), c);
 		}
-    }
+		return;
+	}
+	draw_char(*text, toPoint(start.x+i*7*size, start.y), size, c);
+	for(i=1;i<len;i++) {
+	  draw_char(*(text+i), toPoint(start.x+i*7*size*libDraw_text_character_spacing, start.y), size, c);
+	}
 }
+
+void draw_schar(char to, point where, color c)
+{
+	char *bitmap = font[to];
+	int x,y,set;
+	for (y=12; y >= 0; y--) {
+		for (x=7; x >= 0; x--) {
+			set = bitmap[y] & 1 << x;
+			if(set) put_pixel(where.x+(12-x), where.y+(7-y), c);
+		}
+	}
+}
+
+void draw_char(char to, point where, int size, color c)
+{
+	char *bitmap = font[to];
+	int x,y,set,xe,ye;
+	for (y=12; y >= 0; y--) {
+		for (x=7; x >= 0; x--) {
+			set = bitmap[y] & 1 << x;
+			if(set)
+			  	for(xe=0;xe<size;xe++)
+				  	for(ye=0;ye<size;ye++)
+						put_pixel(where.x+size*(12-x)+xe, where.y+size*(7-y)+ye, c);
+		}
+	}
+}
+
+/*typedef struct {
+     int xsize, ysize;
+     color *data;
+} image;
+
+
+//Todo: change to different file format
+
+image *readPPM(const char *filename)
+{
+         char buff[16];
+         image *img;
+         FILE *fp;
+         int c, rgb_comp_color;
+         //open PPM file for reading
+         fp = fopen(filename, "rb");
+         if (!fp) {
+              fprintf(stderr, "Unable to open file '%s'\n", filename);
+              exit(1);
+         }
+
+         //read image format
+         if (!fgets(buff, sizeof(buff), fp)) {
+              return null;
+         }
+
+    //check the image format
+    if (buff[0] != 'P' || buff[1] != '6') {
+         return null;
+    }
+
+    //alloc memory form image
+    img = (image *)malloc(sizeof(image));
+    if (!img) {
+         return null;
+    }
+
+    //check for comments
+    c = getc(fp);
+    while (c == '#') {
+    while (getc(fp) != '\n') ;
+         c = getc(fp);
+    }
+
+    ungetc(c, fp);
+    //read image size information
+    if (fscanf(fp, "%d %d", &img->x, &img->y) != 2) {
+         return null;
+    }
+
+    //read rgb component
+    if (fscanf(fp, "%d", &rgb_comp_color) != 1) {
+         return null;
+    }
+
+    //check rgb component depth
+    if (rgb_comp_color!= 255) {
+         fprintf(stderr, "'%s' does not have 8-bits components\n", filename);
+         exit(1);
+    }
+
+    while (fgetc(fp) != '\n') ;
+    //memory allocation for pixel data
+    img->data = (color*)malloc(img->x * img->y * sizeof(color));
+
+    if (!img) {
+         fprintf(stderr, "Unable to allocate memory\n");
+         exit(1);
+    }
+
+    //read pixel data from file
+    if (fread(img->data, 3 * img->x, img->y, fp) != img->y) {
+         fprintf(stderr, "Error loading image '%s'\n", filename);
+         exit(1);
+    }
+
+    fclose(fp);
+    return img;
+}*/
